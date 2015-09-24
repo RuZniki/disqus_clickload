@@ -1,0 +1,4 @@
+name = Disqus load on click
+description = Module to load comments after user click link "View comments".
+core = 7.x
+dependencies[] = disqus
