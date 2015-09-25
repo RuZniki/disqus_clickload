@@ -4,20 +4,11 @@
  * @file disqus_clickload.module
  * This module disable auto load of disqus comments.
  * Comments become available only after user click link "View comments".
- * 
- * Module tested only with specific settings. 
+ *
+ * Module tested only with specific settings.
  *    /admin/config/services/disqus
  *    Location -> Content Area.
  */
-
-/**
- * Implements hook_element_info_alter().
- */
-function disqus_clickload_element_info_alter(&$type) {
-  if (isset($type['disqus']['#post_render'])) {
-    $type['disqus']['#post_render'][] = 'disqus_clickload_element_post_render';
-  }
-}
 
 /**
  * Implements hook_theme_registry_alter().
@@ -29,22 +20,24 @@ function disqus_clickload_theme_registry_alter(&$theme_registry) {
 }
 
 /**
- * Replace original disqus.js with original.
- * 
- * @see: disqus_clickload_element_info_alter();
- */
-function disqus_clickload_element_post_render($children, &$element) {
-  $element['#attached']['js'][0] = drupal_get_path('module', 'disqus_clickload') . '/js/disqus.js';
-  return $children;
-}
-
-/**
  * Insert View comments link.
- * 
- * @see: disqus_clickload_theme_registry_alter();
+ *
+ * @see: disqus_clickload_theme_registry_alter().
  */
 function disqus_clickload_noscript($variables) {
   $disqus = $variables['disqus'];
   // Return the comment markup.
   return '<p><a id="display-disqus-comments" href="javascript:void(0);">' . t('View comments') . '</a></p><noscript><p>' . l(t('View the discussion thread.'), 'http://' . $disqus['domain'] . '.disqus.com/?url=' . urlencode($disqus['url'])) . '</p></noscript>';
+}
+
+/**
+ * Implements hook_js_alter().
+ *
+ * Replace original disqus.js with original.
+ */
+function disqus_clickload_js_alter(&$js) {
+  $disqus_js = drupal_get_path('module', 'disqus') . '/disqus.js';
+  if (isset($js[$disqus_js])) {
+    $js[$disqus_js]['data'] = drupal_get_path('module', 'disqus_clickload') . '/js/disqus.js';
+  }
 }

@@ -14,6 +14,7 @@ var disqus_def_email = '';
 var disqus_config;
 
 (function ($) {
+Drupal.disqus = Drupal.disqus || {};
 
 /**
  * Drupal Disqus behavior.
@@ -61,32 +62,27 @@ Drupal.behaviors.disqus = {
             }
           }
         };
-
-        // Make the AJAX call to get the Disqus comments.
         
-        $("#display-disqus-comments", context).click(function() {
-          jQuery.ajax({
-            type: 'GET',
-            url: '//' + disqus_shortname + '.disqus.com/embed.js',
-            dataType: 'script',
-            cache: false
-          });
-        });
-      }
-
-      // Load the comment numbers JavaScript.
-      if (settings.disqusComments || false) {
-        disqus_shortname = settings.disqusComments;
-        // Make the AJAX call to get the number of comments.
-        jQuery.ajax({
-          type: 'GET',
-          url: '//' + disqus_shortname + '.disqus.com/count.js',
-          dataType: 'script',
-          cache: false
-        });
+        if (window.location.hash == '#disqus_thread') {
+          Drupal.disqus.loadDisqusJs();
+        }
+        else {
+          $("#display-disqus-comments", context).click(Drupal.disqus.loadDisqusJs);
+        }
       }
     });
   }
 };
+
+Drupal.disqus.loadDisqusJs = function () {
+  console.log('got you');
+  // Make the AJAX call to get the Disqus comments.
+  jQuery.ajax({
+    type: 'GET',
+    url: '//' + disqus_shortname + '.disqus.com/embed.js',
+    dataType: 'script',
+    cache: false
+  });
+}
 
 })(jQuery);
